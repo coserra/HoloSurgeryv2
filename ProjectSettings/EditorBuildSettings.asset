@@ -4,7 +4,16 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Menu.unity
+    guid: 968764cfc9b8ffd41a3238af0aa62178
+  - enabled: 1
+    path: Assets/Scenes/QRDetection.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/VolumeRenderInPlane.unity
+    guid: 454dd98aba9630847b5ee5a50198125d
   m_configObjects:
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: 0442de3b35d8b5343bcd9517e3cc09ce,
       type: 2}
