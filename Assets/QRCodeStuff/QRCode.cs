@@ -116,5 +116,14 @@ namespace QRTracking
             }
 // eventData.Use(); // Mark the event as used, so it doesn't fall through to other handlers.
         }
+
+        public void DownloadURI()
+        {
+            if (validURI)
+            {
+                GameManager.Instance.info = QRText.text;
+                GameManager.Instance.LoadOnlyThisScene("DownloadZip");
+            }
+        }
     }
 }
