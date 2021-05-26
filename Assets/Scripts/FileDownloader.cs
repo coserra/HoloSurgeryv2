@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Text;
+using UnityEngine;
 
 /* EXAMPLE USAGE
 	FileDownloader fileDownloader = new FileDownloader();
@@ -283,7 +284,7 @@ public class FileDownloader : IDisposable
 	// - drive.google.com/open?id=FILEID
 	// - drive.google.com/file/d/FILEID/view?usp=sharing
 	// - drive.google.com/uc?id=FILEID&export=download
-	private string GetGoogleDriveDownloadAddress( string address )
+	public string GetGoogleDriveDownloadAddress( string address )
 	{
 		int index = address.IndexOf( "id=" );
 		int closingIndex;
@@ -310,7 +311,7 @@ public class FileDownloader : IDisposable
 					closingIndex = address.Length;
 			}
 		}
-
+		MonoBehaviour.print(string.Concat("https://drive.google.com/uc?id=", address.Substring(index, closingIndex - index), "&export=download"));
 		return string.Concat( "https://drive.google.com/uc?id=", address.Substring( index, closingIndex - index ), "&export=download" );
 	}
 

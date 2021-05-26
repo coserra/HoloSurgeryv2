@@ -48,15 +48,20 @@ namespace QRTracking
             qrCodesObjectsList = new SortedDictionary<System.Guid, GameObject>();
 
             // listen to any event changes on QRCOdeManager
-            QRCodesManager.Instance.QRCodesTrackingStateChanged += Instance_QRCodesTrackingStateChanged;
-            QRCodesManager.Instance.QRCodeAdded += Instance_QRCodeAdded;
-            QRCodesManager.Instance.QRCodeUpdated += Instance_QRCodeUpdated;
-            QRCodesManager.Instance.QRCodeRemoved += Instance_QRCodeRemoved;
+            //TODO arreglar esto que solo funciona la primera vez, el singleton está roto o algo
+            if (QRCodesManager.Instance != null)
+            {
+                QRCodesManager.Instance.QRCodesTrackingStateChanged += Instance_QRCodesTrackingStateChanged;
+                QRCodesManager.Instance.QRCodeAdded += Instance_QRCodeAdded;
+                QRCodesManager.Instance.QRCodeUpdated += Instance_QRCodeUpdated;
+                QRCodesManager.Instance.QRCodeRemoved += Instance_QRCodeRemoved;
+            }
             if (qrCodePrefab == null)
             {
                 throw new System.Exception("Prefab not assigned");
             }
         }
+
         // call this whenever the state has changed - line 120 of QRCodesManager - this method is invoked when we start QR Tracking from QRCodesManager
         private void Instance_QRCodesTrackingStateChanged(object sender, bool status)
         {

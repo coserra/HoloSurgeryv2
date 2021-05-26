@@ -9,6 +9,7 @@ public class GameManager : MySingleton<GameManager>
 
     List<AsyncOperation> _loadOperations;
     private List<string> _currentSceneLoaded;
+    public string downloadPath { set; get; }
     public string info { set; get; }
     // Start is called before the first frame update
     void Start()
@@ -17,6 +18,9 @@ public class GameManager : MySingleton<GameManager>
         _loadOperations = new List<AsyncOperation>();
         _currentSceneLoaded = new List<string>();
         LoadScene("menu");
+
+        //TODO enlace perfectamente desde QR
+        info = "https://drive.google.com/file/d/1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS/view?usp=sharing";
     }
     
     void OnLoadOperationComplete(AsyncOperation ao)
@@ -66,4 +70,6 @@ public class GameManager : MySingleton<GameManager>
         ao.completed += OnUnloadOperationComplete;
         _currentSceneLoaded.Remove(sceneName);
     }
+
+
 }
