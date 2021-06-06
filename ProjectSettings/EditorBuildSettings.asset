@@ -20,6 +20,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/DownloadZip.unity
     guid: faf8fe83b96cc434c862b92c3b66fcfb
+  - enabled: 1
+    path: Assets/Scenes/Image.unity
+    guid: 139924069ad377a4f8e88fbbe754f5ce
+  - enabled: 1
+    path: Assets/Scenes/Video.unity
+    guid: f54ee1153940ede40ace0a07d313ed8d
   m_configObjects:
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: 0442de3b35d8b5343bcd9517e3cc09ce,
       type: 2}

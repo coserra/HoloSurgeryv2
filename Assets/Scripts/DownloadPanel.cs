@@ -1,10 +1,16 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Microsoft.MixedReality.Toolkit.UI;
 using UnityEngine.Networking;
 using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+#if WINDOWS_UWP
+using Windows.Storage;
+#endif
 
 public class DownloadPanel : MonoBehaviour
 {
@@ -12,33 +18,21 @@ public class DownloadPanel : MonoBehaviour
     [SerializeField] GameObject loadingPanel;
     [SerializeField] ProgressIndicatorLoadingBar loadingBar;
     [SerializeField] TextMeshPro loadingText;
+    [SerializeField] TextMeshPro debugText;
+
+    WWWDownloader www;
 
     private void Start()
     {
         texto.text = GameManager.Instance.info;
+        www = gameObject.GetComponent<WWWDownloader>();
     }
 
     public void StartDownload()
     {
-        FileDownloader fileDownloader = new FileDownloader();
-        GameManager gm = GameManager.Instance;
-
-        //loadingPanel.SetActive(true);
-        //gameObject.SetActive(false);
-        //loadingBar.OpenAsync();
-
-        // This callback is triggered for DownloadFileAsync only
-        //fileDownloader.DownloadProgressChanged += (sender, e) => UpdateLoadingBar(e.BytesReceived, e.TotalBytesToReceive);
-        // This callback is triggered for both DownloadFile and DownloadFileAsync
-        //fileDownloader.DownloadFileCompleted += (sender, e) => EndDownload();
-        //string fullPath=gm.downloadPath +"\\"+ System.DateTime.UtcNow.ToString("ddMMyy_HHmmss") +".zip";
-        //Debug.Log("Ruta de descarga:"+fullPath);
-        //fileDownloader.DownloadFileAsync(texto.text, fullPath);
-
-        //WWWDownloader downloader = new WWWDownloader();
-        //downloader.DownloadImage("https://i.blogs.es/594843/chrome/450_1000.jpg");
-
-        DownloadFile();
+        Uri downloadAddress = new Uri(GameManager.Instance.info);
+        StartCoroutine(GetFile(downloadAddress, "archivo.zip"));
+        //www.DownloadFile(GameManager.Instance.info, "archivo.zip");
     }
 
     public void CancelDownload()
@@ -58,24 +52,27 @@ public class DownloadPanel : MonoBehaviour
         loadingText.text = "Descarga finalizada";
     }
 
-    void DownloadFile()
+    IEnumerator GetFile(Uri downloadUrl, string filename)
     {
-        StartCoroutine(GetText());
-    }
-
-    IEnumerator GetText()
-    {
+        Debug.Log("Descarga de " + downloadUrl + " en " + Path.Combine(Application.persistentDataPath, filename));
         FileDownloader fl = new FileDownloader();
-        UnityWebRequest www = new UnityWebRequest(fl.GetGoogleDriveDownloadAddress("https://drive.google.com/file/d/104tEB6djMJAdAFor-W4cJuxeP47VSHxI/view?usp=sharing"));
+        UnityWebRequest www = new UnityWebRequest(downloadUrl);
         www.downloadHandler = new DownloadHandlerBuffer();
         yield return www.SendWebRequest();
         Debug.Log(www.downloadHandler.text);
-
-        // Or retrieve results as binary data
-        byte[] results = www.downloadHandler.data;
-        string savePath = Path.Combine(GameManager.Instance.downloadPath, "archivo.txt");
-        //Now Save it
-        System.IO.File.WriteAllBytes(savePath, results);
-        //}
+        debugText.text = www.downloadHandler.text;
+        if (www.error != null)
+        {
+            Debug.Log(www.error);
+            debugText.text = www.error;
+        }
+        else
+        {
+            // Or retrieve results as binary data
+            byte[] results = www.downloadHandler.data;
+            string savePath = Path.Combine(Application.persistentDataPath, filename);
+            //Now Save it
+            System.IO.File.WriteAllBytes(savePath, results);
+        }
     }
 }

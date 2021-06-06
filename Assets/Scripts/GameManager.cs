@@ -11,6 +11,8 @@ public class GameManager : MySingleton<GameManager>
     private List<string> _currentSceneLoaded;
     public string downloadPath { set; get; }
     public string info { set; get; }
+
+    public string fileToOpen { set; get; }
     // Start is called before the first frame update
     void Start()
     {
@@ -20,7 +22,12 @@ public class GameManager : MySingleton<GameManager>
         LoadScene("menu");
 
         //TODO enlace perfectamente desde QR
-        info = "https://drive.google.com/file/d/1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS/view?usp=sharing";
+        info = "http://s628528467.mialojamiento.es/wp-content/3dForNAS.rar";
+        //info = "https://drive.google.com/file/d/1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS/view?usp=sharing";
+        //info = "https://drive.google.com/uc?export=download&confirm=swMM&id=1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS";
+        //info = "https://drive.google.com/uc?id=1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS&export=download";
+
+        fileToOpen = @"C:\Users\Pablo\AppData\LocalLow\DefaultCompany\HoloSurgeryv20\4k-the-legend-of-zelda-breath-of-the-wild-characters-2910.jpg";
     }
     
     void OnLoadOperationComplete(AsyncOperation ao)

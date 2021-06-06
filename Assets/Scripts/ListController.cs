@@ -11,30 +11,41 @@ public class ListController : MonoBehaviour
     [SerializeField] private GameObject grid;
     [SerializeField] private GameObject buttonPrefab;
 
+    private List<GameObject> instances;
+
     public event Action<int> OnReturn;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        instances = new List<GameObject>();
     }
 
     public void SetNewList(List<string> list)
     {
+        DestroyList();
         for (int i=0;i<list.Count;i++)
         {
             var instance = Instantiate(buttonPrefab, grid.transform);
-            instance.transform.GetChild(0).transform.GetChild(0).GetComponent<TextMesh>().text = list[i];
+            ButtonConfigHelper bch = instance.GetComponent<ButtonConfigHelper>();
+            bch.MainLabelText = list[i];
+            bch.SeeItSayItLabelEnabled = false;
             int temp = i;
-            instance.GetComponent<Interactable>().OnClick.AddListener(()=>ItemSelected(temp));
+            bch.OnClick.AddListener(() => ItemSelected(temp));
             Debug.Log("En el listener se ha colocado el numero " + i);
+            instances.Add(instance);
         }
         grid.GetComponent<GridObjectCollection>().UpdateCollection();
     }
 
     public void DestroyList()
     {
-
+        foreach (GameObject g in instances)
+        {
+            Destroy(g);
+        }
+        instances.Clear();
+        grid.GetComponent<GridObjectCollection>().UpdateCollection();
     }
 
     public void ItemSelected(int selection)
