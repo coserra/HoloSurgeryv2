@@ -4,10 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ToogleCutoutBox : MonoBehaviour
+public class ToogleCutout : MonoBehaviour
 {
     [SerializeField] GameObject realBox;
     [SerializeField] GameObject fakeBox;
+    [SerializeField] GameObject realPlane;
+    [SerializeField] GameObject fakePlane;
     [SerializeField] GameObject container;
 
     private BoxCollider containerCollider;
@@ -23,9 +25,8 @@ public class ToogleCutoutBox : MonoBehaviour
         containerControl = container.GetComponent<BoundsControl>();
     }
 
-    public void ChangeStatus()
+    public void ChangeBoxStatus()
     {
-        Debug.Log("Cambiando");
         if (isActive)
         {
             realBox.SetActive(false);
@@ -41,6 +42,27 @@ public class ToogleCutoutBox : MonoBehaviour
             containerCollider.enabled =false;
             containerManipulator.enabled =false;
             containerControl.enabled =false;
+        }
+        isActive = !isActive;
+    }
+
+    public void ChangePlaneStatus()
+    {
+        if (isActive)
+        {
+            realPlane.SetActive(false);
+            fakePlane.SetActive(false);
+            containerCollider.enabled = true;
+            containerManipulator.enabled = true;
+            containerControl.enabled = true;
+        }
+        else
+        {
+            realPlane.SetActive(true);
+            fakePlane.SetActive(true);
+            containerCollider.enabled = false;
+            containerManipulator.enabled = false;
+            containerControl.enabled = false;
         }
         isActive = !isActive;
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Microsoft.MixedReality.Toolkit.UI;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -10,6 +11,7 @@ public class VolumeLoader : MonoBehaviour
     private VolumeRenderedObject volume;
 
     [SerializeField] CutoutBox cutoutBox;
+    [SerializeField] CrossSectionPlane crossSectionPlane;
 
     void Start()
     {
@@ -53,6 +55,7 @@ public class VolumeLoader : MonoBehaviour
         volume.transform.localPosition = Vector3.zero;
         SetLayerRecursively(volume.gameObject, 8);
         cutoutBox.targetObject = volume;
+        crossSectionPlane.targetObject = volume;
         //volumeArea.gameObject.AddComponent<BoxCollider>();
         //volumeArea.gameObject.AddComponent<ObjectManipulator>();
         Debug.Log("Dataset importado");
@@ -66,6 +69,25 @@ public class VolumeLoader : MonoBehaviour
         foreach (Transform child in obj.transform)
         {
             SetLayerRecursively(child.gameObject, newLayer);
+        }
+    }
+
+    public void UpdateVisibilityMin(SliderEventData data)
+    {
+        if (volume != null)
+        {
+            float max = volume.GetVisibilityWindow().y;
+            volume.SetVisibilityWindow(data.NewValue, max);
+        }
+        
+    }
+
+    public void UpdateVisibilityMax(SliderEventData data)
+    {
+        if (volume != null)
+        {
+            float min = volume.GetVisibilityWindow().x;
+            volume.SetVisibilityWindow(min, data.NewValue);
         }
     }
 }

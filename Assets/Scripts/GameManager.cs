@@ -8,7 +8,9 @@ public class GameManager : MySingleton<GameManager>
     public Camera mainCamera;
 
     List<AsyncOperation> _loadOperations;
-    private List<string> _currentSceneLoaded;
+    private Hashtable _currentSceneLoaded;
+    //private List<Scene> _currentSceneLoaded;
+    public int lastSceneLoaded;
     public string downloadPath { set; get; }
     public string info { set; get; }
 
@@ -18,16 +20,17 @@ public class GameManager : MySingleton<GameManager>
     {
         DontDestroyOnLoad(gameObject);
         _loadOperations = new List<AsyncOperation>();
-        _currentSceneLoaded = new List<string>();
-        LoadScene("menu");
+        _currentSceneLoaded = new Hashtable();
+        lastSceneLoaded = 0;
 
         //TODO enlace perfectamente desde QR
-        info = "http://s628528467.mialojamiento.es/wp-content/3dForNAS.rar";
+        info = "https://i.blogs.es/397d0c/zelda-breath-of-the-wild-01/1366_2000.jpg";
+        //info = "http://s628528467.mialojamiento.es/wp-content/3dForNAS.rar";
         //info = "https://drive.google.com/file/d/1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS/view?usp=sharing";
         //info = "https://drive.google.com/uc?export=download&confirm=swMM&id=1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS";
         //info = "https://drive.google.com/uc?id=1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS&export=download";
 
-        fileToOpen = @"C:\Users\Pablo\AppData\LocalLow\DefaultCompany\HoloSurgeryv20\4k-the-legend-of-zelda-breath-of-the-wild-characters-2910.jpg";
+        fileToOpen = "";
     }
     
     void OnLoadOperationComplete(AsyncOperation ao)
@@ -37,6 +40,15 @@ public class GameManager : MySingleton<GameManager>
             _loadOperations.Remove(ao);
         }
         Debug.Log("Scene load completed");
+
+        lastSceneLoaded++;
+        _currentSceneLoaded.Add(lastSceneLoaded, SceneManager.GetSceneAt(SceneManager.sceneCount-1));
+        
+        foreach (int n in _currentSceneLoaded.Keys)
+        {
+            Scene s = (Scene) _currentSceneLoaded[n];
+            Debug.Log("Numero " + n + " escena: " + s.name);
+        }
     }
 
     void OnUnloadOperationComplete(AsyncOperation ao)
@@ -53,16 +65,16 @@ public class GameManager : MySingleton<GameManager>
         }
         ao.completed += OnLoadOperationComplete;
         _loadOperations.Add(ao);
-        _currentSceneLoaded.Add(sceneName);
+        
     }
 
     public void LoadOnlyThisScene(string sceneName)
     {
-        while (_currentSceneLoaded.Count > 0)
+        foreach(Scene s in _currentSceneLoaded.Values)
         {
-            string scene = _currentSceneLoaded[0];
-            UnloadScene(scene);
+            UnloadScene(s);
         }
+        _currentSceneLoaded.Clear();
         LoadScene(sceneName);
     }
 
@@ -75,8 +87,31 @@ public class GameManager : MySingleton<GameManager>
             return;
         }
         ao.completed += OnUnloadOperationComplete;
-        _currentSceneLoaded.Remove(sceneName);
+        //_currentSceneLoaded.Remove(sceneName);
     }
 
+    public void UnloadScene(Scene scene)
+    {
+        Debug.Log("Unloading " + scene.name);
+        AsyncOperation ao = SceneManager.UnloadSceneAsync(scene);
+        if (ao == null)
+        {
+            return;
+        }
+        ao.completed += OnUnloadOperationComplete;
+        //_currentSceneLoaded.Remove(scene);
+    }
 
+    public void UnloadScene(int sceneId)
+    {
+        Scene scene = (Scene) _currentSceneLoaded[sceneId];
+        Debug.Log("Unloading " + scene.name);
+        AsyncOperation ao = SceneManager.UnloadSceneAsync(scene);
+        if (ao == null)
+        {
+            return;
+        }
+        ao.completed += OnUnloadOperationComplete;
+        _currentSceneLoaded.Remove(sceneId);
+    }
 }

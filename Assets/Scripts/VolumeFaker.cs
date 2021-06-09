@@ -9,6 +9,7 @@ public class VolumeFaker : MonoBehaviour
     private Transform camTransform;
     [SerializeField] Transform model;
     [SerializeField] GameObject plane;
+    [SerializeField] Transform container;
     [SerializeField] GameObject secondCam;
 
     [SerializeField] float vectorSize;
@@ -29,6 +30,7 @@ public class VolumeFaker : MonoBehaviour
         plane.transform.LookAt(mainCamera.transform);
         plane.transform.rotation = Quaternion.LookRotation(transform.position - camTransform.position);
 
+        model.rotation = container.rotation;
     }
 
 

@@ -13,12 +13,15 @@ public class ListController : MonoBehaviour
 
     private List<GameObject> instances;
 
+    private GridObjectCollection gridComponent;
+
     public event Action<int> OnReturn;
 
     // Start is called before the first frame update
     void Start()
     {
         instances = new List<GameObject>();
+        gridComponent = grid.GetComponent<GridObjectCollection>();
     }
 
     public void SetNewList(List<string> list)
@@ -35,7 +38,14 @@ public class ListController : MonoBehaviour
             Debug.Log("En el listener se ha colocado el numero " + i);
             instances.Add(instance);
         }
-        grid.GetComponent<GridObjectCollection>().UpdateCollection();
+
+        StartCoroutine(UpdateList());
+    }
+
+    private IEnumerator UpdateList()
+    {
+        yield return new WaitForSeconds(0.1f);
+        gridComponent.UpdateCollection();
     }
 
     public void DestroyList()
@@ -45,7 +55,7 @@ public class ListController : MonoBehaviour
             Destroy(g);
         }
         instances.Clear();
-        grid.GetComponent<GridObjectCollection>().UpdateCollection();
+        gridComponent.UpdateCollection();
     }
 
     public void ItemSelected(int selection)

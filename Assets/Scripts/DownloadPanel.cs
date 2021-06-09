@@ -31,7 +31,8 @@ public class DownloadPanel : MonoBehaviour
     public void StartDownload()
     {
         Uri downloadAddress = new Uri(GameManager.Instance.info);
-        StartCoroutine(GetFile(downloadAddress, "archivo.zip"));
+        string filename = System.IO.Path.GetFileName(downloadAddress.LocalPath);
+        StartCoroutine(GetFile(downloadAddress, filename));
         //www.DownloadFile(GameManager.Instance.info, "archivo.zip");
     }
 

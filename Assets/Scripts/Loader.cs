@@ -72,7 +72,8 @@ public class Loader : MonoBehaviour
         }
         else if (pathNames[folderNumber].EndsWith("obj"))
         {
-
+            GameManager.Instance.fileToOpen = pathList[folderNumber];
+            GameManager.Instance.LoadScene("Obj");
         }
         else
         {

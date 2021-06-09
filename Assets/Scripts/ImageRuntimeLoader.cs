@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class ImageLoader : MonoBehaviour
+public class ImageRuntimeLoader : MonoBehaviour
 {
     // Start is called before the first frame update
     private string imagePath;
@@ -27,7 +27,7 @@ public class ImageLoader : MonoBehaviour
             byte[] fileData = File.ReadAllBytes(imagePath);
             Texture2D tex = new Texture2D(2, 2);
             tex.LoadImage(fileData);
-            sprite.sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 20000.0f);
+            sprite.sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), tex.width>tex.height?tex.width:tex.height);
         }
     }
 }
