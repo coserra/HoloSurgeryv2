@@ -19,7 +19,7 @@ public class FilePickerManager
     public Action<string> onFolderPicked;
     public Action<string> onFilePicked;
 
-    public string PickZip()
+    public void PickFile()
     {
 #if !UNITY_EDITOR && UNITY_WSA_10_0
         Debug.Log("***********************************");
@@ -32,8 +32,13 @@ public class FilePickerManager
             var filepicker = new FileOpenPicker();
             // filepicker.FileTypeFilter.Add("*");
             filepicker.FileTypeFilter.Add(".zip");
+            filepicker.FileTypeFilter.Add(".obj");
+            filepicker.FileTypeFilter.Add(".mp4");
+            filepicker.FileTypeFilter.Add(".jpg");
+            filepicker.FileTypeFilter.Add(".png");
 
             var file = await filepicker.PickSingleFileAsync();
+            await file.CopyAsync(ApplicationData.Current.LocalFolder);
             UnityEngine.WSA.Application.InvokeOnAppThread(() => 
             {
                 Debug.Log("***********************************");
@@ -46,13 +51,10 @@ public class FilePickerManager
                 //texto.text += "Path: " + path;
                 Debug.Log("***********************************");
 
-                
                 //This section of code reads through the file (and is covered in the link)
                 // but if you want to make your own parcing function you can 
-                // ReadTextFile(path);
-                //StartCoroutine(ReadTextFileCoroutine(path));
-                if(onFilePicked!=null)
-                    onFilePicked.Invoke(path);
+                if (onFilePicked != null)
+                    onFilePicked.Invoke(name);
 
             }, false);
         }, false);
@@ -63,11 +65,12 @@ public class FilePickerManager
         Debug.Log("***********************************");
 #else
         Debug.Log("Ejecutado desde el editor de Unity");
-        path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        path=Path.Combine(path, "Downloads");
+        path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        path=Path.Combine(path, "archivo.zip");
+        if (onFilePicked != null)
+            onFilePicked.Invoke(path);
         //texto.text = "url de prueba";
 #endif
-        return path;
     }
 
     public void PickFolder()
@@ -110,6 +113,8 @@ public class FilePickerManager
         Debug.Log("Ejecutado desde el editor de Unity");
         path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         path=Path.Combine(path, "Downloads");
+        if (onFilePicked != null)
+            onFilePicked.Invoke(path);
         //texto.text = "url de prueba";
 #endif
     }

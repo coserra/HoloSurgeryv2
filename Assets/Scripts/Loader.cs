@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class Loader : MonoBehaviour
@@ -11,13 +13,19 @@ public class Loader : MonoBehaviour
 
     private ListController listController;
 
+    [SerializeField] GameObject list;
+    [SerializeField] GameObject importPanel;
+    [SerializeField] TextMeshPro debugtext;
+
+    private string lastImportedPath;
+
     // Start is called before the first frame update
     void Start()
     {
         listController = GetComponent<ListController>();
-        listController.OnReturn += ItemSelected;
         pathList = new List<string>();
         pathNames = new List<string>();
+        GameManager.Instance.QuickLoadEvent += QuickLoad;
     }
 
     public void LoadPersistentDataPath()
@@ -25,8 +33,12 @@ public class Loader : MonoBehaviour
         pathList.Clear();
         pathNames.Clear();
         LoadDataPath(Application.persistentDataPath);
-        if (pathNames.Count>0)
+        if (pathNames.Count > 0)
+        {
+            listController.ClearReturnEvent();
+            listController.OnReturn += ItemSelected;
             listController.SetNewList(pathNames);
+        }
     }
     private void LoadDataPath(string path)
     {
@@ -85,6 +97,52 @@ public class Loader : MonoBehaviour
         }
     }
 
+    public void QuickLoad()
+    {
+        QuickLoad(lastImportedPath);
+    }
+
+    public void QuickLoad(string path)
+    {
+        string filename = Path.GetFileName(new Uri(path).LocalPath);
+        Debug.Log("Seleccionado " + filename + " (" + path + " )");
+        if (filename.EndsWith("zip"))
+        {
+            string zipDestinyPath = Path.Combine(Application.persistentDataPath, "tmp");
+            zipDestinyPath = Path.Combine(zipDestinyPath, filename.Substring(0, filename.IndexOf(".")));
+
+            list.SetActive(true);
+
+            ExtractZip(path, zipDestinyPath);
+            SelectUsefulFolders(zipDestinyPath);
+
+        }
+        else if (filename.EndsWith("jpg") || filename.EndsWith("png"))
+        {
+            Debug.Log(path);
+            GameManager.Instance.fileToOpen = path;
+            GameManager.Instance.LoadScene("Image");
+        }
+        else if (filename.EndsWith("mp4"))
+        {
+            GameManager.Instance.fileToOpen = path;
+            GameManager.Instance.LoadScene("Video");
+        }
+        else if (filename.EndsWith("obj"))
+        {
+            GameManager.Instance.fileToOpen = path;
+            GameManager.Instance.LoadScene("Obj");
+        }
+        else
+        {
+            if (!Path.HasExtension(filename))
+            {
+                GameManager.Instance.fileToOpen = path;
+                GameManager.Instance.LoadScene("VolumeRenderInPlane");
+            }
+        }
+    }
+
     private bool AceptedFormat(string name)
     {
         return (name.EndsWith("rar") || name.EndsWith("zip") || name.EndsWith("jpg") || name.EndsWith("png") || name.EndsWith("mp4") ||
@@ -131,7 +189,8 @@ public class Loader : MonoBehaviour
             pathList.Add(file.FullName);
             pathNames.Add(file.Name);
         }
-
+        listController.ClearReturnEvent();
+        listController.OnReturn += ItemSelected;
         listController.SetNewList(pathNames);
     }
 
@@ -157,5 +216,39 @@ public class Loader : MonoBehaviour
                 SelectUsefulFoldersRec(d.FullName);
             }
         }
+    }
+
+    public void Import()
+    {
+        FilePickerManager fp = new FilePickerManager();
+        fp.onFilePicked += CopyFileToPersistentPath;
+        fp.PickFile();
+    }
+
+    public void CopyFileToPersistentPath(string file)
+    {
+        lastImportedPath = Path.Combine(Application.persistentDataPath, file);
+        importPanel.SetActive(true);
+    }
+
+    public void SelectFileToDelete()
+    {
+        pathList.Clear();
+        pathNames.Clear();
+        LoadDataPath(Application.persistentDataPath);
+        if (pathNames.Count > 0)
+        {
+            listController.ClearReturnEvent();
+            listController.OnReturn += DeleteFile;
+            listController.SetNewList(pathNames);
+        }
+    }
+
+    private void DeleteFile(int folderNumber)
+    {
+        FileInfo file = new FileInfo(pathList[folderNumber]);
+        if (file.Exists)
+            file.Delete();
+        SelectFileToDelete();
     }
 }

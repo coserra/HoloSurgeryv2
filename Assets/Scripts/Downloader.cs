@@ -12,20 +12,22 @@ using System.Threading.Tasks;
 using Windows.Storage;
 #endif
 
-public class DownloadPanel : MonoBehaviour
+public class Downloader : MonoBehaviour
 {
     [SerializeField] TextMeshPro texto;
-    [SerializeField] GameObject loadingPanel;
     [SerializeField] ProgressIndicatorLoadingBar loadingBar;
     [SerializeField] TextMeshPro loadingText;
     [SerializeField] TextMeshPro debugText;
+    [SerializeField] GameObject loadingPanel;
+    [SerializeField] GameObject aceptPanel;
+    [SerializeField] GameObject importPanel;
+    [SerializeField] GameObject errorPanel;
 
-    WWWDownloader www;
+    private string savePath;
 
     private void Start()
     {
         texto.text = GameManager.Instance.info;
-        www = gameObject.GetComponent<WWWDownloader>();
     }
 
     public void StartDownload()
@@ -33,7 +35,6 @@ public class DownloadPanel : MonoBehaviour
         Uri downloadAddress = new Uri(GameManager.Instance.info);
         string filename = System.IO.Path.GetFileName(downloadAddress.LocalPath);
         StartCoroutine(GetFile(downloadAddress, filename));
-        //www.DownloadFile(GameManager.Instance.info, "archivo.zip");
     }
 
     public void CancelDownload()
@@ -46,34 +47,67 @@ public class DownloadPanel : MonoBehaviour
         loadingBar.Progress=(float)current / total;
     }
 
-    public void EndDownload()
+    public void UpdateLoadingBar(float progress)
     {
-        loadingBar.CloseAsync();
-        loadingBar.gameObject.SetActive(false);
-        loadingText.text = "Descarga finalizada";
+        loadingBar.Progress = (float) progress;
     }
 
     IEnumerator GetFile(Uri downloadUrl, string filename)
     {
         Debug.Log("Descarga de " + downloadUrl + " en " + Path.Combine(Application.persistentDataPath, filename));
-        FileDownloader fl = new FileDownloader();
         UnityWebRequest www = new UnityWebRequest(downloadUrl);
         www.downloadHandler = new DownloadHandlerBuffer();
+        StartCoroutine(DownloadInfo(www));
+        aceptPanel.SetActive(false);
         yield return www.SendWebRequest();
+
+
         Debug.Log(www.downloadHandler.text);
         debugText.text = www.downloadHandler.text;
+        bool downloadOK;
         if (www.error != null)
         {
+            downloadOK = false;
             Debug.Log(www.error);
             debugText.text = www.error;
         }
         else
         {
+            downloadOK = true;
             // Or retrieve results as binary data
             byte[] results = www.downloadHandler.data;
-            string savePath = Path.Combine(Application.persistentDataPath, filename);
+            savePath = Path.Combine(Application.persistentDataPath, filename);
             //Now Save it
             System.IO.File.WriteAllBytes(savePath, results);
         }
+
+        if (downloadOK)
+        {
+            importPanel.SetActive(true);
+        }
+        else
+        {
+            errorPanel.SetActive(true);
+        }
+    }
+
+    IEnumerator DownloadInfo(UnityWebRequest uwr)
+    {
+        loadingPanel.SetActive(true);
+        loadingBar.OpenAsync();
+        
+        while (!uwr.isDone)
+        {
+            UpdateLoadingBar(uwr.downloadProgress);
+            yield return null;
+        }
+        loadingBar.CloseAsync();
+        loadingPanel.SetActive(false);
+        loadingText.text = "Descarga finalizada";
+    }
+
+    public void PostDownload()
+    {
+        GameManager.Instance.QuickLoad(savePath);
     }
 }

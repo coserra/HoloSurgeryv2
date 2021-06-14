@@ -13,6 +13,21 @@ public class VolumeLoader : MonoBehaviour
     [SerializeField] CutoutBox cutoutBox;
     [SerializeField] CrossSectionPlane crossSectionPlane;
 
+    [SerializeField] GameObject slicingQuad1;
+    [SerializeField] GameObject slicingQuad2;
+    [SerializeField] GameObject slicingQuad3;
+
+    SlicingPlane slicingPlane1;
+    SlicingPlane slicingPlane2;
+    SlicingPlane slicingPlane3;
+
+    private float min1;
+    private float max1;
+    private float min2;
+    private float max2;
+    private float min3;
+    private float max3;
+
     void Start()
     {
         if (!Path.HasExtension(GameManager.Instance.fileToOpen))
@@ -59,6 +74,7 @@ public class VolumeLoader : MonoBehaviour
         //volumeArea.gameObject.AddComponent<BoxCollider>();
         //volumeArea.gameObject.AddComponent<ObjectManipulator>();
         Debug.Log("Dataset importado");
+        CreateSlicingPlane();
     }
 
 
@@ -90,4 +106,54 @@ public class VolumeLoader : MonoBehaviour
             volume.SetVisibilityWindow(min, data.NewValue);
         }
     }
+
+    public void CreateSlicingPlane()
+    {
+        slicingPlane1 = volume.CreateSlicingPlane();
+        slicingPlane2 = volume.CreateSlicingPlane();
+        slicingPlane3 = volume.CreateSlicingPlane();
+        
+        SetLayerRecursively(slicingPlane1.gameObject, 9);
+        SetLayerRecursively(slicingPlane2.gameObject, 9);
+        SetLayerRecursively(slicingPlane3.gameObject, 9);
+        slicingQuad1.transform.localScale = slicingPlane1.GetComponent<Renderer>().bounds.size;
+        slicingQuad2.transform.localScale = slicingPlane2.GetComponent<Renderer>().bounds.size;
+        slicingQuad3.transform.localScale = slicingPlane3.GetComponent<Renderer>().bounds.size;
+
+        slicingQuad1.GetComponent<MeshRenderer>().material = slicingPlane1.GetComponent<MeshRenderer>().material;
+        slicingQuad2.GetComponent<MeshRenderer>().material = slicingPlane2.GetComponent<MeshRenderer>().material;
+        slicingQuad3.GetComponent<MeshRenderer>().material = slicingPlane3.GetComponent<MeshRenderer>().material;
+
+        slicingPlane2.transform.Rotate(Vector3.forward, 270);
+        slicingPlane3.transform.Rotate(Vector3.right, 90);
+
+    }
+
+    public void MoveSlicingPlane1(SliderEventData data)
+    {
+        if (slicingPlane1 != null)
+        {
+            Vector3 position = slicingPlane1.transform.position;
+            slicingPlane1.transform.localPosition = new Vector3(0, data.NewValue - 0.5f, 0);
+        }
+    }
+
+    public void MoveSlicingPlane2(SliderEventData data)
+    {
+        if (slicingPlane2 != null)
+        {
+            Vector3 position = slicingPlane2.transform.position;
+            slicingPlane2.transform.localPosition = new Vector3(data.NewValue - 0.5f, 0, 0);
+        }
+    }
+
+    public void MoveSlicingPlane3(SliderEventData data)
+    {
+        if (slicingPlane3 != null)
+        {
+            Vector3 position = slicingPlane3.transform.position;
+            slicingPlane3.transform.localPosition = new Vector3(0, 0, -(data.NewValue - 0.5f));
+        }
+    }
+
 }

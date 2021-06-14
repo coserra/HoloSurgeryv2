@@ -42,7 +42,7 @@ public class OptionsManager : MonoBehaviour
     {
         LoadHandOption();
         LoadMenuPostition();
-        LoadDownloadPath();
+        //LoadDownloadPath();
     }
 
     public void SaveHandOption()

@@ -63,4 +63,9 @@ public class ListController : MonoBehaviour
         if (OnReturn!=null)
             OnReturn.Invoke(selection);
     }
+
+    public void ClearReturnEvent()
+    {
+        OnReturn = null;
+    }
 }

@@ -1,11 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MySingleton<GameManager>
 {
     public Camera mainCamera;
+    [SerializeField] GameObject loadingPanel;
 
     List<AsyncOperation> _loadOperations;
     private Hashtable _currentSceneLoaded;
@@ -15,6 +18,8 @@ public class GameManager : MySingleton<GameManager>
     public string info { set; get; }
 
     public string fileToOpen { set; get; }
+
+    public Action<string> QuickLoadEvent;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,9 +28,9 @@ public class GameManager : MySingleton<GameManager>
         _currentSceneLoaded = new Hashtable();
         lastSceneLoaded = 0;
 
-        //TODO enlace perfectamente desde QR
-        info = "https://i.blogs.es/397d0c/zelda-breath-of-the-wild-01/1366_2000.jpg";
+        //info = "https://i.blogs.es/397d0c/zelda-breath-of-the-wild-01/1366_2000.jpg";
         //info = "http://s628528467.mialojamiento.es/wp-content/3dForNAS.rar";
+        info = "http://s628528467.mialojamiento.es/wp-content/uploads/2021/06/MedicalContentForNAS.zip";
         //info = "https://drive.google.com/file/d/1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS/view?usp=sharing";
         //info = "https://drive.google.com/uc?export=download&confirm=swMM&id=1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS";
         //info = "https://drive.google.com/uc?id=1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS&export=download";
@@ -35,6 +40,7 @@ public class GameManager : MySingleton<GameManager>
     
     void OnLoadOperationComplete(AsyncOperation ao)
     {
+        loadingPanel.SetActive(false);
         if (_loadOperations.Contains(ao))
         {
             _loadOperations.Remove(ao);
@@ -58,6 +64,7 @@ public class GameManager : MySingleton<GameManager>
 
     public void LoadScene(string sceneName)
     {
+        loadingPanel.SetActive(true);
         AsyncOperation ao = SceneManager.LoadSceneAsync(sceneName,LoadSceneMode.Additive);
         if (ao == null)
         {
@@ -78,6 +85,7 @@ public class GameManager : MySingleton<GameManager>
         LoadScene(sceneName);
     }
 
+
     public void UnloadScene(string sceneName)
     {
         Debug.Log("Unloading " + sceneName);
@@ -88,6 +96,15 @@ public class GameManager : MySingleton<GameManager>
         }
         ao.completed += OnUnloadOperationComplete;
         //_currentSceneLoaded.Remove(sceneName);
+    }
+
+    public void UnloadAll()
+    {
+        foreach (Scene s in _currentSceneLoaded.Values)
+        {
+            UnloadScene(s);
+        }
+        _currentSceneLoaded.Clear();
     }
 
     public void UnloadScene(Scene scene)
@@ -113,5 +130,17 @@ public class GameManager : MySingleton<GameManager>
         }
         ao.completed += OnUnloadOperationComplete;
         _currentSceneLoaded.Remove(sceneId);
+    }
+
+    public void QuickLoad(string path)
+    {
+        if (QuickLoadEvent != null) QuickLoadEvent.Invoke(path);
+    }
+
+    private void OnApplicationQuit()
+    {
+        DirectoryInfo dir = new DirectoryInfo(Path.Combine(Application.persistentDataPath, "tmp"));
+        if (dir.Exists)
+            dir.Delete(true);
     }
 }
