@@ -15,8 +15,9 @@ public class ObjLoader : MonoBehaviour
 
     GameObject loadedObj;
 
-    [SerializeField] Material transparentMaterial;
-    [SerializeField] Material wireMaterial;
+    Material importedMtl;
+    [SerializeField] Material defaultMaterial;
+
     bool activeTexture;
 
     [SerializeField] TextMeshPro debugText;
@@ -34,66 +35,47 @@ public class ObjLoader : MonoBehaviour
     void LoadObj()
     {
         //var fs = new FileStream(objPath,FileMode.Open);
-        //OBJLoader objLoader = new OBJLoader();
-        //objLoader.SplitMode = SplitMode.None;
+        OBJLoader objLoader = new OBJLoader();
+        objLoader.SplitMode = SplitMode.None;
 
-        //loadedObj = objLoader.Load(fs);
+        loadedObj = objLoader.Load(objPath);
+        importedMtl = loadedObj.GetComponentInChildren<MeshRenderer>().material;
 
-        loadedObj = new GameObject();
+        //loadedObj = new GameObject();
 
-        Mesh holderMesh = new Mesh();
-        ObjImporter newMesh = new ObjImporter();
-        holderMesh = newMesh.ImportFile(objPath);
+        //Mesh holderMesh = new Mesh();
+        //ObjImporter newMesh = new ObjImporter();
+        //holderMesh = newMesh.ImportFile(objPath);
         
-        MeshRenderer renderer = loadedObj.AddComponent<MeshRenderer>();
-        MeshFilter filter = loadedObj.AddComponent<MeshFilter>();
-        filter.mesh = holderMesh;
-        renderer.material = wireMaterial;
-        activeTexture = false;
+        //MeshRenderer renderer = loadedObj.AddComponent<MeshRenderer>();
+        //MeshFilter filter = loadedObj.AddComponent<MeshFilter>();
+        //filter.mesh = holderMesh;
+        //renderer.material = wireMaterial;
+        //activeTexture = false;
 
         BoxCollider collider = loadedObj.AddComponent<BoxCollider>();
         FitColliderToChildren(loadedObj);
         loadedObj.transform.parent = gameObject.transform;
-        loadedObj.transform.localScale = new Vector3(0.000000001f, 0.000000001f, 0.000000001f);
-        //loadedObj.transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
+        loadedObj.transform.localPosition = Vector3.zero;
+        //loadedObj.transform.localScale = new Vector3(0.000000001f, 0.000000001f, 0.000000001f);
+        loadedObj.transform.localScale = new Vector3(0.001f, 0.001f, 0.001f);
         boundsControl.BoundsOverride = collider;
         backPlate.transform.position = collider.bounds.min + new Vector3(collider.bounds.size.x/2,-backPlate.transform.localScale.y,collider.bounds.size.z/2);
     }
 
     public void ChangeTexture()
     {
-        //if (activeTexture)
-        //{
-        //    loadedObj.GetComponent<MeshRenderer>().material = wireMaterial;
-        //}
-        //else
-        //{
-        //    loadedObj.GetComponent<MeshRenderer>().material = transparentMaterial;
-        //}
-        //activeTexture = !activeTexture;
-    }
-
-    public void prueba2()
-    {
-        var www = new WWW("https://people.sc.fsu.edu/~jburkardt/data/obj/lamp.obj");
-        while (!www.isDone)
-            System.Threading.Thread.Sleep(1);
-
-        //create stream and load
-        var textStream = new MemoryStream(Encoding.UTF8.GetBytes(www.text));
-        var loadedObj = new OBJLoader().Load(textStream);
-    }
-
-    public void prueba3()
-    {
-        Debug.Log(Application.temporaryCachePath);
-        debugText.text = Application.temporaryCachePath;
-
-        if (File.Exists(Path.Combine(Application.temporaryCachePath, "objeto.obj")))
+        if (activeTexture)
         {
-            var loadedObj = new OBJLoader().Load(Path.Combine(Application.temporaryCachePath, "objeto.obj"));
+            loadedObj.GetComponentInChildren<MeshRenderer>().material = importedMtl;
         }
+        else
+        {
+            loadedObj.GetComponentInChildren<MeshRenderer>().material = defaultMaterial;
+        }
+        activeTexture = !activeTexture;
     }
+
 
 
     private void FitColliderToChildren(GameObject parentObject)
@@ -118,7 +100,7 @@ public class ObjLoader : MonoBehaviour
         if (hasBounds)
         {
             bc.center = bounds.center - parentObject.transform.position;
-            bc.center = new Vector3(bc.center.x, bc.center.y, bc.center.z);
+            bc.center = new Vector3(-bc.center.x, bc.center.y, bc.center.z);
             bc.size = bounds.size;
             
         }

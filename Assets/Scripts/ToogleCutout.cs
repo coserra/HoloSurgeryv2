@@ -16,7 +16,6 @@ public class ToogleCutout : MonoBehaviour
     private ObjectManipulator containerManipulator;
     private BoundsControl containerControl;
 
-    private bool isActive;
     // Start is called before the first frame update
     void Start()
     {
@@ -27,7 +26,7 @@ public class ToogleCutout : MonoBehaviour
 
     public void ChangeBoxStatus()
     {
-        if (isActive)
+        if (fakeBox.activeSelf)
         {
             realBox.SetActive(false);
             fakeBox.SetActive(false);
@@ -37,18 +36,18 @@ public class ToogleCutout : MonoBehaviour
         }
         else
         {
+            if (fakePlane.activeSelf) ChangePlaneStatus();
             realBox.SetActive(true);
             fakeBox.SetActive(true);
             containerCollider.enabled =false;
             containerManipulator.enabled =false;
             containerControl.enabled =false;
         }
-        isActive = !isActive;
     }
 
     public void ChangePlaneStatus()
     {
-        if (isActive)
+        if (fakePlane.activeSelf)
         {
             realPlane.SetActive(false);
             fakePlane.SetActive(false);
@@ -58,12 +57,12 @@ public class ToogleCutout : MonoBehaviour
         }
         else
         {
+            if (fakeBox.activeSelf) ChangeBoxStatus();
             realPlane.SetActive(true);
             fakePlane.SetActive(true);
             containerCollider.enabled = false;
             containerManipulator.enabled = false;
             containerControl.enabled = false;
         }
-        isActive = !isActive;
     }
 }

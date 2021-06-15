@@ -143,4 +143,10 @@ public class GameManager : MySingleton<GameManager>
         if (dir.Exists)
             dir.Delete(true);
     }
+
+    public void CloseApplication()
+    {
+        Debug.Log("Cerrando aplicación");
+        Application.Quit();
+    }
 }

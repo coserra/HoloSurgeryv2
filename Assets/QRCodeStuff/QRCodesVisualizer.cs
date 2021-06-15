@@ -6,6 +6,7 @@ using UnityEngine;
 
 using Microsoft.MixedReality.QR;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 namespace QRTracking
 {
@@ -112,6 +113,7 @@ namespace QRTracking
                     if (action.type == ActionData.Type.Added)
                     {
                         GameObject qrCodeObject = Instantiate(qrCodePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+                        SceneManager.MoveGameObjectToScene(qrCodeObject, SceneManager.GetSceneByName("QRDetection"));
                         qrCodeObject.GetComponent<SpatialGraphCoordinateSystem>().Id = action.qrCode.SpatialGraphNodeId;
                         qrCodeObject.GetComponent<QRCode>().qrCode = action.qrCode;
                         LatestQRCodeDetails.text = action.qrCode.Data; //updating to show in our QRCodePanel the data of latest QR code scanned
@@ -122,6 +124,7 @@ namespace QRTracking
                         if (!qrCodesObjectsList.ContainsKey(action.qrCode.Id))
                         {
                             GameObject qrCodeObject = Instantiate(qrCodePrefab, new Vector3(0, 0, 0), Quaternion.identity);
+                            SceneManager.MoveGameObjectToScene(qrCodeObject, SceneManager.GetSceneByName("QRDetection"));
                             qrCodeObject.GetComponent<SpatialGraphCoordinateSystem>().Id = action.qrCode.SpatialGraphNodeId;
                             qrCodeObject.GetComponent<QRCode>().qrCode = action.qrCode;
                             qrCodesObjectsList.Add(action.qrCode.Id, qrCodeObject);
