@@ -28,12 +28,7 @@ public class GameManager : MySingleton<GameManager>
         _currentSceneLoaded = new Hashtable();
         lastSceneLoaded = 0;
 
-        //info = "https://i.blogs.es/397d0c/zelda-breath-of-the-wild-01/1366_2000.jpg";
-        //info = "http://s628528467.mialojamiento.es/wp-content/3dForNAS.rar";
-        info = "http://s628528467.mialojamiento.es/wp-content/uploads/2021/06/MedicalContentForNAS.zip";
-        //info = "https://drive.google.com/file/d/1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS/view?usp=sharing";
-        //info = "https://drive.google.com/uc?export=download&confirm=swMM&id=1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS";
-        //info = "https://drive.google.com/uc?id=1_u9UWNOvtBi8KB3skLcq6pwnyAEyCezS&export=download";
+        info = "";
 
         fileToOpen = "";
     }
