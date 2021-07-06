@@ -125,9 +125,7 @@ PlayerSettings:
     16:9: 1
     Others: 1
   bundleVersion: 0.1
-  preloadedAssets:
-  - {fileID: -77217284416946255, guid: 0442de3b35d8b5343bcd9517e3cc09ce, type: 2}
-  - {fileID: 8340788629477719861, guid: 64cfbe67b5741894dbf79c18d187960f, type: 2}
+  preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -628,7 +626,7 @@ PlayerSettings:
       HumanInterfaceDevice: False
       InputInjectionBrokered: False
       InternetClient: True
-      InternetClientServer: False
+      InternetClientServer: True
       Location: False
       LowLevelDevices: False
       Microphone: True
@@ -637,7 +635,7 @@ PlayerSettings:
       OfflineMapsManagement: False
       PhoneCall: False
       PhoneCallHistoryPublic: False
-      PicturesLibrary: False
+      PicturesLibrary: True
       PointOfService: False
       PrivateNetworkClientServer: False
       Proximity: False

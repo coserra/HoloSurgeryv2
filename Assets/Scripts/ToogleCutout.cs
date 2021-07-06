@@ -4,17 +4,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ToogleCutoutBox : MonoBehaviour
+public class ToogleCutout : MonoBehaviour
 {
     [SerializeField] GameObject realBox;
     [SerializeField] GameObject fakeBox;
+    [SerializeField] GameObject realPlane;
+    [SerializeField] GameObject fakePlane;
     [SerializeField] GameObject container;
 
     private BoxCollider containerCollider;
     private ObjectManipulator containerManipulator;
     private BoundsControl containerControl;
 
-    private bool isActive;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,10 +24,9 @@ public class ToogleCutoutBox : MonoBehaviour
         containerControl = container.GetComponent<BoundsControl>();
     }
 
-    public void ChangeStatus()
+    public void ChangeBoxStatus()
     {
-        Debug.Log("Cambiando");
-        if (isActive)
+        if (fakeBox.activeSelf)
         {
             realBox.SetActive(false);
             fakeBox.SetActive(false);
@@ -36,12 +36,33 @@ public class ToogleCutoutBox : MonoBehaviour
         }
         else
         {
+            if (fakePlane.activeSelf) ChangePlaneStatus();
             realBox.SetActive(true);
             fakeBox.SetActive(true);
             containerCollider.enabled =false;
             containerManipulator.enabled =false;
             containerControl.enabled =false;
         }
-        isActive = !isActive;
+    }
+
+    public void ChangePlaneStatus()
+    {
+        if (fakePlane.activeSelf)
+        {
+            realPlane.SetActive(false);
+            fakePlane.SetActive(false);
+            containerCollider.enabled = true;
+            containerManipulator.enabled = true;
+            containerControl.enabled = true;
+        }
+        else
+        {
+            if (fakeBox.activeSelf) ChangeBoxStatus();
+            realPlane.SetActive(true);
+            fakePlane.SetActive(true);
+            containerCollider.enabled = false;
+            containerManipulator.enabled = false;
+            containerControl.enabled = false;
+        }
     }
 }
